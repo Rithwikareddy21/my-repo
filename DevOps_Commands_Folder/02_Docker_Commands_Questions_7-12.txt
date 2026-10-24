@@ -1,0 +1,171 @@
+DEVOPS PRACTICAL — DOCKER COMMANDS
+Windows PowerShell / VS Code Terminal
+
+Run commands one at a time. Docker Desktop should be running.
+
+# A. Docker commands
+
+## Pull an image and inspect images/containers
+
+```powershell
+docker pull nginx:latest
+docker images
+docker ps
+docker ps -a
+```
+
+- `docker ps` shows running containers.
+- `docker ps -a` shows all containers, including stopped ones.
+- `docker images` lists downloaded/built images.
+
+## Run, inspect, stop, start, remove a container
+
+```powershell
+docker run -d --name my-nginx -p 8080:80 nginx:latest
+docker ps
+docker logs my-nginx
+curl.exe http://localhost:8080
+docker stop my-nginx
+docker start my-nginx
+docker rm -f my-nginx
+docker ps -a
+```
+
+If the container name is already in use, inspect with `docker ps -a` and remove the old one before re-running:
+```powershell
+docker rm -f my-nginx
+```
+
+## Run a container with an environment variable
+
+Example: PostgreSQL
+
+```powershell
+docker pull postgres:latest
+docker run -d --name MyPostgresContainer -e POSTGRES_PASSWORD=abcd1234 -p 8844:5432 postgres:latest
+docker ps
+docker logs MyPostgresContainer
+docker exec -it MyPostgresContainer psql -U postgres
+```
+
+Inside PostgreSQL, exit with:
+```sql
+\q
+```
+
+Remove it when finished:
+```powershell
+docker rm -f MyPostgresContainer
+```
+
+## Whoami containers / port mapping
+
+```powershell
+docker pull traefik/whoami:latest
+docker run -d --name whoami1 -p 8686:80 traefik/whoami:latest
+docker run -d --name whoami2 -p 8787:80 traefik/whoami:latest
+docker ps
+curl.exe http://localhost:8686
+curl.exe http://localhost:8787
+```
+
+Optional third container to test port 8687:
+```powershell
+docker run -d --name whoami3 -p 8687:80 traefik/whoami:latest
+curl.exe http://localhost:8687
+```
+
+## Docker network
+
+```powershell
+docker network create my-network
+docker network ls
+docker network inspect my-network
+docker network rm my-network
+```
+
+## Build an image from a simple Nginx HTML page
+
+Create `index.html` in a folder, then create a file named exactly `Dockerfile` in the same folder:
+
+```dockerfile
+FROM nginx:latest
+COPY index.html /usr/share/nginx/html/index.html
+EXPOSE 80
+CMD ["nginx", "-g", "daemon off;"]
+```
+
+Build and run:
+```powershell
+docker build -t my-web:1.0 .
+docker run -d --name my-web-container -p 8080:80 my-web:1.0
+curl.exe http://localhost:8080
+docker logs my-web-container
+```
+
+Cleanup:
+```powershell
+docker rm -f my-web-container
+```
+
+## Docker Compose
+
+Run these from the folder containing the Compose YAML file. Replace the filename with the exact file provided in the exam.
+
+```powershell
+docker compose -f .\docker-compose.yml up -d
+docker compose -f .\docker-compose.yml ps
+docker compose -f .\docker-compose.yml logs
+docker compose -f .\docker-compose.yml down
+```
+
+Example for the provided Simple API file:
+```powershell
+docker pull jkaninda/simple-api:latest
+docker compose -f .\jkaninda-simple-api-docker-compose.yml up -d
+docker compose -f .\jkaninda-simple-api-docker-compose.yml ps
+docker compose -f .\jkaninda-simple-api-docker-compose.yml logs
+docker compose -f .\jkaninda-simple-api-docker-compose.yml down
+```
+
+## Pull the four images from the practice sheet
+
+```powershell
+docker pull postgres:latest
+docker pull traefik/whoami:latest
+docker pull jkaninda/simple-api:latest
+docker pull ssatyab/studentmarkservice:latest
+docker images
+```
+
+---
+
+
+# Q12. Dockerfile for a Java simple-api project (if this is the version in your lab)
+
+Run from the project folder containing pom.xml and Dockerfile:
+
+```powershell
+mvn clean package
+docker build -t simple-api-demo:1.0 .
+docker run -d --name simple-api-demo -p 8080:8080 simple-api-demo:1.0
+docker ps
+curl.exe http://localhost:8080
+curl.exe http://localhost:8080/books
+```
+
+Example Dockerfile (requires the JAR to be created under target/):
+
+```dockerfile
+FROM eclipse-temurin:17-jre
+WORKDIR /app
+COPY target/*.jar app.jar
+EXPOSE 8080
+ENTRYPOINT ["java", "-jar", "app.jar"]
+```
+
+To stop and remove the container:
+
+```powershell
+docker rm -f simple-api-demo
+```

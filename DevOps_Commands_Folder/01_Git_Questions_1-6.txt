@@ -1,0 +1,107 @@
+DEVOPS PRACTICAL — GIT & GITHUB (QUESTIONS 1–6)
+Windows PowerShell / VS Code Terminal
+
+Run commands one at a time. Replace placeholder values with your own.
+
+# Git & GitHub — Q1 to Q6
+
+> Run these commands in PowerShell or the VS Code terminal. Replace the repository URL with your own GitHub repository URL.
+
+## Q1. Configure Git identity (once per computer)
+
+```powershell
+git config --global user.name "Your Name"
+git config --global user.email "you@example.com"
+git config --global --list
+```
+
+## Q2. Create a local repository, add a file, commit, and push to GitHub
+
+Create a new repository on GitHub first, then use its URL below:
+
+```powershell
+mkdir my-repo
+cd my-repo
+git init
+echo "Hello Git" > local-file.txt
+git add local-file.txt
+git commit -m "Add local file"
+git branch -M main
+git remote add origin https://github.com/YOUR-USERNAME/YOUR-REPO.git
+git push -u origin main
+```
+
+If the repository is already initialized or the `origin` remote already exists, don't repeat `git init` or `git remote add origin`. Check the remote with:
+```powershell
+git remote -v
+```
+
+## Q3. Pull changes from GitHub
+
+If the GitHub repository has a file that is not in your local folder, run:
+
+```powershell
+git pull origin main
+dir
+```
+
+To view a text file in PowerShell:
+```powershell
+type github-file.txt
+```
+
+## Q4. Check repository status and commit changes
+
+```powershell
+git status
+git add .
+git commit -m "Update files"
+git push origin main
+```
+
+## Q5. Clone an existing GitHub repository
+
+Use the repository URL provided in the exam:
+
+```powershell
+git clone https://github.com/YOUR-USERNAME/YOUR-REPO.git
+cd YOUR-REPO
+git status
+```
+
+## Q6. Common Git commands / branch workflow
+
+```powershell
+git status
+git log --oneline
+git branch
+git switch -c feature-branch
+git add .
+git commit -m "Add changes"
+git push -u origin feature-branch
+git switch main
+git pull origin main
+```
+
+If the exam specifically asks to merge the feature branch into main:
+```powershell
+git switch main
+git merge feature-branch
+git push origin main
+```
+
+### Git quick revision
+
+- `git init` — initialize a local repository.
+- `git clone URL` — download an existing repository.
+- `git add file` — stage a file.
+- `git commit -m "message"` — save a snapshot locally.
+- `git push` — upload local commits to GitHub.
+- `git pull` — download and integrate remote changes.
+- `git status` — show changed/staged files.
+- `git log --oneline` — show compact commit history.
+- `git remote -v` — show connected remote repositories.
+
+> Note: If the exam's exact Q1–Q6 prompts use different filenames or steps, follow the exam sheet's wording. Use `dir` and `type filename.txt` in Windows PowerShell rather than relying on Unix-only `ls`/`cat` behavior.
+
+---
